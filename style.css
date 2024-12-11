@@ -6,7 +6,7 @@ Author: Brindle Digital
 Author URI: https://www.brindledigital.com/
 GitHub Theme URI: https://github.com/BrindleDigital/brindle-lola-2
 GitHub Branch:    master
-Version: v1.0.3
+Version: v1.0.4
 Template:		 generatepress
 Date:            11-12-2024
 Requires at least: 5.0
@@ -18,4 +18,5 @@ Text Domain:	 brindle-lola-2
 */
 body{
 	color: red;
+	background: white;
 }
