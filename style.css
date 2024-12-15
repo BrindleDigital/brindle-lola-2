@@ -6,9 +6,9 @@ Author: Brindle Digital
 Author URI: https://www.brindledigital.com/
 GitHub Theme URI: https://github.com/BrindleDigital/brindle-lola-2
 GitHub Branch:    master
-Version: v1.0.4
+Version: v1.0.5
 Template:		 generatepress
-Date:            11-12-2024
+Date:            15-12-2024
 Requires at least: 5.0
 Tested up to: 5.7
 Requires PHP: 7.0
@@ -16,7 +16,35 @@ License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Text Domain:	 brindle-lola-2
 */
-body{
-	color: red;
-	background: white;
+.gb-button.btn-close {
+	position: absolute;
+	right: 35px;
+	top: 34px;
+}
+
+.top-bar {
+	position: relative;
+}
+
+.gb-container.banner-overlay-radial::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(95.33% 83.44% at 47.78% 89.76%, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.1) 53.1%, rgba(0, 0, 0, 0) 95.42%);
+}
+
+body .wp-block-button .wp-block-button__link {
+	min-width: 160px;
+	height: 51px;
+	padding: 15px 35px;
+	border-radius: 25px;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	flex-wrap: nowrap;
+}
+
+.gb-container.sticky-section {
+	position: sticky;
+	top: 60px;
 }
