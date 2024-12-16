@@ -1,440 +1,213 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName
+/**
+ * Lola_2 Theme Updater.
+ *
+ * @package Lola_2
+ * @since 1.1
+ */
 
-// Prevent loading this file directly and/or if the class is already defined
-if ( ! defined( 'ABSPATH' ) || class_exists( 'WPGitHubUpdater' ) || class_exists( 'WP_GitHub_Updater' ) )
-	return;
+namespace Lola_2;
 
 /**
+ * Updater class.
  *
- *
- * @version 1.6
- * @author Joachim Kudish <info@jkudish.com>
- * @link http://jkudish.com
- * @package WP_GitHub_Updater
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @copyright Copyright (c) 2011-2013, Joachim Kudish
- *
- * GNU General Public License, Free Software Foundation
- * <http://creativecommons.org/licenses/GPL/2.0/>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * The theme-review process on w.org takes months.
+ * In the meantime this can serve as a simple updater.
  */
-class WP_GitHub_Updater {
+class Updater {
 
 	/**
-	 * GitHub Updater version
-	 */
-	const VERSION = 1.6;
-
-	/**
-	 * @var $config the config for the updater
-	 * @access public
-	 */
-	var $config;
-
-	/**
-	 * @var $missing_config any config that is missing from the initialization of this instance
-	 * @access public
-	 */
-	var $missing_config;
-
-	/**
-	 * @var $github_data temporiraly store the data fetched from GitHub, allows us to only load the data once per class instance
-	 * @access private
-	 */
-	private $github_data;
-
-
-	/**
-	 * Class Constructor
+	 * The repository.
 	 *
+	 * @access private
 	 * @since 1.0
-	 * @param array $config the configuration required for the updater to work
-	 * @see has_minimum_config()
-	 * @return void
+	 * @var string
 	 */
-	public function __construct( $config = array() ) {
+	private $repo;
 
-		$defaults = array(
-			'slug' => plugin_basename( __FILE__ ),
-			'proper_folder_name' => dirname( plugin_basename( __FILE__ ) ),
-			'sslverify' => true,
-			'access_token' => '',
-		);
+	/**
+	 * Theme name.
+	 *
+	 * @access private
+	 * @since 1.0
+	 * @var string
+	 */
+	private $name;
 
-		$this->config = wp_parse_args( $config, $defaults );
+	/**
+	 * Theme slug.
+	 *
+	 * @access private
+	 * @since 1.0
+	 * @var string
+	 */
+	private $slug;
 
-		// if the minimum config isn't set, issue a warning and bail
-		if ( ! $this->has_minimum_config() ) {
-			$message = 'The GitHub Updater was initialized without the minimum required configuration, please check the config in your plugin. The following params are missing: ';
-			$message .= implode( ',', $this->missing_config );
-			_doing_it_wrong( __CLASS__, $message , self::VERSION );
+	/**
+	 * Theme version.
+	 *
+	 * @access private
+	 * @since 1.1
+	 * @var string
+	 */
+	private $ver;
+
+	/**
+	 * Theme URL.
+	 *
+	 * @access private
+	 * @since 1.0
+	 * @var string
+	 */
+	private $url;
+
+	/**
+	 * The response from the API.
+	 *
+	 * @access private
+	 * @since 1.0
+	 * @var array
+	 */
+	private $response;
+
+	/**
+	 * Constructor.
+	 *
+	 * @access public
+	 * @since 1.0
+	 * @param array $args The arguments for this theme.
+	 */
+	public function __construct( $args ) {
+		$this->name = $args['name'];
+		$this->slug = $args['slug'];
+        $this->repo = $args['repo'];
+        $this->ver  = $args['ver'];
+		$this->url  = $args['url'];
+
+		$this->response = $this->get_response();
+		// Check for theme updates.
+		add_filter( 'http_request_args', [ $this, 'update_check' ], 5, 2 );
+		// Inject theme updates into the response array.
+		add_filter( 'pre_set_site_transient_update_themes', [ $this, 'update_themes' ] );
+		add_filter( 'pre_set_transient_update_themes', [ $this, 'update_themes' ] );
+	}
+
+	/**
+	 * Gets the releases URL.
+	 *
+	 * @access private
+	 * @since 1.0
+	 * @return string
+	 */
+	private function get_releases_url() {
+		return 'https://api.github.com/repos/' . $this->repo . '/releases';
+	}
+
+	/**
+	 * Get the response from the Github API.
+	 *
+	 * @access private
+	 * @since 1.0
+	 * @return array
+	 */
+	private function get_response() {
+		// Check transient.
+		$cache = get_site_transient( md5( $this->get_releases_url() ) );
+		if ( $cache ) {
+			return $cache;
+		}
+		$response = wp_remote_get( $this->get_releases_url() );
+		if ( ! is_wp_error( $response ) && 200 === wp_remote_retrieve_response_code( $response ) ) {
+			$response = json_decode( wp_remote_retrieve_body( $response ), true );
+			set_site_transient( md5( $this->get_releases_url() ), $response, 12 * HOUR_IN_SECONDS );
+		}
+	}
+
+	/**
+	 * Get the new version file.
+	 *
+	 * @access private
+	 * @since 1.0
+	 * @return string
+	 */
+	private function get_latest_package() {
+		if ( ! $this->response ) {
 			return;
 		}
-
-		$this->set_defaults();
-
-		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'api_check' ) );
-
-		// Hook into the plugin details screen
-		add_filter( 'plugins_api', array( $this, 'get_plugin_info' ), 10, 3 );
-		add_filter( 'upgrader_post_install', array( $this, 'upgrader_post_install' ), 10, 3 );
-
-		// set timeout
-		add_filter( 'http_request_timeout', array( $this, 'http_request_timeout' ) );
-
-		// set sslverify for zip download
-		add_filter( 'http_request_args', array( $this, 'http_request_sslverify' ), 10, 2 );
-	}
-
-	public function has_minimum_config() {
-
-		$this->missing_config = array();
-
-		$required_config_params = array(
-			'api_url',
-			'raw_url',
-			'github_url',
-			'zip_url',
-			'requires',
-			'tested',
-			'readme',
-		);
-
-		foreach ( $required_config_params as $required_param ) {
-			if ( empty( $this->config[$required_param] ) )
-				$this->missing_config[] = $required_param;
-		}
-
-		return ( empty( $this->missing_config ) );
-	}
-
-
-	/**
-	 * Check wether or not the transients need to be overruled and API needs to be called for every single page load
-	 *
-	 * @return bool overrule or not
-	 */
-	public function overrule_transients() {
-		return ( defined( 'WP_GITHUB_FORCE_UPDATE' ) && WP_GITHUB_FORCE_UPDATE );
-	}
-
-
-	/**
-	 * Set defaults
-	 *
-	 * @since 1.2
-	 * @return void
-	 */
-	public function set_defaults() {
-		if ( !empty( $this->config['access_token'] ) ) {
-
-			// See Downloading a zipball (private repo) https://help.github.com/articles/downloading-files-from-the-command-line
-			extract( parse_url( $this->config['zip_url'] ) ); // $scheme, $host, $path
-
-			$zip_url = $scheme . '://api.github.com/repos' . $path;
-			$zip_url = add_query_arg( array( 'access_token' => $this->config['access_token'] ), $zip_url );
-
-			$this->config['zip_url'] = $zip_url;
-		}
-
-
-		if ( ! isset( $this->config['new_version'] ) )
-			$this->config['new_version'] = $this->get_new_version();
-
-		if ( ! isset( $this->config['last_updated'] ) )
-			$this->config['last_updated'] = $this->get_date();
-
-		if ( ! isset( $this->config['description'] ) )
-			$this->config['description'] = $this->get_description();
-
-		$plugin_data = $this->get_plugin_data();
-		if ( ! isset( $this->config['plugin_name'] ) )
-			$this->config['plugin_name'] = $plugin_data['Name'];
-
-		if ( ! isset( $this->config['version'] ) )
-			$this->config['version'] = $plugin_data['Version'];
-
-		if ( ! isset( $this->config['author'] ) )
-			$this->config['author'] = $plugin_data['Author'];
-
-		if ( ! isset( $this->config['homepage'] ) )
-			$this->config['homepage'] = $plugin_data['PluginURI'];
-
-		if ( ! isset( $this->config['readme'] ) )
-			$this->config['readme'] = 'README.md';
-
-	}
-
-
-	/**
-	 * Callback fn for the http_request_timeout filter
-	 *
-	 * @since 1.0
-	 * @return int timeout value
-	 */
-	public function http_request_timeout() {
-		return 2;
-	}
-
-	/**
-	 * Callback fn for the http_request_args filter
-	 *
-	 * @param unknown $args
-	 * @param unknown $url
-	 *
-	 * @return mixed
-	 */
-	public function http_request_sslverify( $args, $url ) {
-		if ( $this->config[ 'zip_url' ] == $url )
-			$args[ 'sslverify' ] = $this->config[ 'sslverify' ];
-
-		return $args;
-	}
-
-
-	/**
-	 * Get New Version from GitHub
-	 *
-	 * @since 1.0
-	 * @return int $version the version number
-	 */
-	public function get_new_version() {
-		$version = get_site_transient( md5($this->config['slug']).'_new_version' );
-
-		if ( $this->overrule_transients() || ( !isset( $version ) || !$version || '' == $version ) ) {
-
-			$raw_response = $this->remote_get( trailingslashit( $this->config['raw_url'] ) . basename( $this->config['slug'] ) );
-
-			if ( is_wp_error( $raw_response ) )
-				$version = false;
-
-			if (is_array($raw_response)) {
-				if (!empty($raw_response['body']))
-					preg_match( '/.*Version\:\s*(.*)$/mi', $raw_response['body'], $matches );
+		foreach ( $this->response as $release ) {
+			if ( isset( $release['assets'] ) && isset( $release['assets'][0] ) && isset( $release['assets'][0]['browser_download_url'] ) ) {
+				return $release['assets'][0]['browser_download_url'];
 			}
+		}
+	}
 
-			if ( empty( $matches[1] ) )
-				$version = false;
-			else
-				$version = $matches[1];
-
-			// back compat for older readme version handling
-			// only done when there is no version found in file name
-			if ( false === $version ) {
-				$raw_response = $this->remote_get( trailingslashit( $this->config['raw_url'] ) . $this->config['readme'] );
-
-				if ( is_wp_error( $raw_response ) )
-					return $version;
-
-				preg_match( '#^\s*`*~Current Version\:\s*([^~]*)~#im', $raw_response['body'], $__version );
-
-				if ( isset( $__version[1] ) ) {
-					$version_readme = $__version[1];
-					if ( -1 == version_compare( $version, $version_readme ) )
-						$version = $version_readme;
-				}
+	/**
+	 * Get the new version.
+	 *
+	 * @access private
+	 * @since 1.0
+	 * @return string
+	 */
+	private function get_latest_version() {
+		if ( ! $this->response ) {
+			return;
+		}
+		foreach ( $this->response as $release ) {
+			if ( isset( $release['tag_name'] ) ) {
+				return str_replace( 'v', '', $release['tag_name'] );
 			}
-
-			// refresh every 6 hours
-			if ( false !== $version )
-				set_site_transient( md5($this->config['slug']).'_new_version', $version, 60*60*6 );
 		}
-
-		return $version;
 	}
 
-
 	/**
-	 * Interact with GitHub
-	 *
-	 * @param string $query
-	 *
-	 * @since 1.6
-	 * @return mixed
-	 */
-	public function remote_get( $query ) {
-		if ( ! empty( $this->config['access_token'] ) )
-			$query = add_query_arg( array( 'access_token' => $this->config['access_token'] ), $query );
-
-		$raw_response = wp_remote_get( $query, array(
-			'sslverify' => $this->config['sslverify']
-		) );
-
-		return $raw_response;
-	}
-
-
-	/**
-	 * Get GitHub Data from the specified repository
+	 * Disables requests to the wp.org repository for this theme.
 	 *
 	 * @since 1.0
-	 * @return array $github_data the data
+	 *
+	 * @param array  $request An array of HTTP request arguments.
+	 * @param string $url The request URL.
+	 * @return array
 	 */
-	public function get_github_data() {
-		if ( isset( $this->github_data ) && ! empty( $this->github_data ) ) {
-			$github_data = $this->github_data;
-		} else {
-			$github_data = get_site_transient( md5($this->config['slug']).'_github_data' );
+	public function update_check( $request, $url ) {
+		if ( false !== strpos( $url, '//api.wordpress.org/themes/update-check/1.1/' ) ) {
+			$data = json_decode( $request['body']['themes'] );
+			unset( $data->themes->{$this->slug} );
+			$request['body']['themes'] = wp_json_encode( $data );
+		}
+		return $request;
+	}
 
-			if ( $this->overrule_transients() || ( ! isset( $github_data ) || ! $github_data || '' == $github_data ) ) {
-				$github_data = $this->remote_get( $this->config['api_url'] );
+	/**
+	 * Inject update data for this theme.
+	 *
+	 * @since 1.0
+	 *
+	 * @param object $transient The pre-saved value of the `update_themes` site transient.
+	 * @return object
+	 */
+	public function update_themes( $transient ) {
+		if ( isset( $transient->checked ) ) {
+			$current_version = $this->ver;
 
-				if ( is_wp_error( $github_data ) )
-					return false;
-
-				$github_data = json_decode( $github_data['body'] );
-
-				// refresh every 6 hours
-				set_site_transient( md5($this->config['slug']).'_github_data', $github_data, 60*60*6 );
+			if ( version_compare( $current_version, $this->get_latest_version(), '<' ) ) {
+				$transient->response[ $this->name ] = [
+					'theme'       => $this->name,
+					'new_version' => $this->get_latest_version(),
+					'url'         => 'https://github.com/' . $this->repo . '/releases',
+					'package'     => $this->get_latest_package(),
+				];
 			}
-
-			// Store the data in this class instance for future calls
-			$this->github_data = $github_data;
 		}
-
-		return $github_data;
-	}
-
-
-	/**
-	 * Get update date
-	 *
-	 * @since 1.0
-	 * @return string $date the date
-	 */
-	public function get_date() {
-		$_date = $this->get_github_data();
-		return ( !empty( $_date->updated_at ) ) ? date( 'Y-m-d', strtotime( $_date->updated_at ) ) : false;
-	}
-
-
-	/**
-	 * Get plugin description
-	 *
-	 * @since 1.0
-	 * @return string $description the description
-	 */
-	public function get_description() {
-		$_description = $this->get_github_data();
-		return ( !empty( $_description->description ) ) ? $_description->description : false;
-	}
-
-
-	/**
-	 * Get Plugin data
-	 *
-	 * @since 1.0
-	 * @return object $data the data
-	 */
-	public function get_plugin_data() {
-		include_once ABSPATH.'/wp-admin/includes/plugin.php';
-		$data = get_plugin_data( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
-		return $data;
-	}
-
-
-	/**
-	 * Hook into the plugin update check and connect to GitHub
-	 *
-	 * @since 1.0
-	 * @param object  $transient the plugin data transient
-	 * @return object $transient updated plugin data transient
-	 */
-	public function api_check( $transient ) {
-
-		// Check if the transient contains the 'checked' information
-		// If not, just return its value without hacking it
-		if ( empty( $transient->checked ) )
-			return $transient;
-
-		// check the version and decide if it's new
-		$update = version_compare( $this->config['new_version'], $this->config['version'] );
-
-		if ( 1 === $update ) {
-			$response = new stdClass;
-			$response->new_version = $this->config['new_version'];
-			$response->slug = $this->config['proper_folder_name'];
-			$response->url = add_query_arg( array( 'access_token' => $this->config['access_token'] ), $this->config['github_url'] );
-			$response->package = $this->config['zip_url'];
-
-			// If response is false, don't alter the transient
-			if ( false !== $response )
-				$transient->response[ $this->config['slug'] ] = $response;
-		}
-
 		return $transient;
 	}
-
-
-	/**
-	 * Get Plugin info
-	 *
-	 * @since 1.0
-	 * @param bool    $false  always false
-	 * @param string  $action the API function being performed
-	 * @param object  $args   plugin arguments
-	 * @return object $response the plugin info
-	 */
-	public function get_plugin_info( $false, $action, $response ) {
-
-		// Check if this call API is for the right plugin
-		if ( !isset( $response->slug ) || $response->slug != $this->config['slug'] )
-			return false;
-
-		$response->slug = $this->config['slug'];
-		$response->plugin_name  = $this->config['plugin_name'];
-		$response->version = $this->config['new_version'];
-		$response->author = $this->config['author'];
-		$response->homepage = $this->config['homepage'];
-		$response->requires = $this->config['requires'];
-		$response->tested = $this->config['tested'];
-		$response->downloaded   = 0;
-		$response->last_updated = $this->config['last_updated'];
-		$response->sections = array( 'description' => $this->config['description'] );
-		$response->download_link = $this->config['zip_url'];
-
-		return $response;
-	}
-
-
-	/**
-	 * Upgrader/Updater
-	 * Move & activate the plugin, echo the update message
-	 *
-	 * @since 1.0
-	 * @param boolean $true       always true
-	 * @param mixed   $hook_extra not used
-	 * @param array   $result     the result of the move
-	 * @return array $result the result of the move
-	 */
-	public function upgrader_post_install( $true, $hook_extra, $result ) {
-
-		global $wp_filesystem;
-
-		// Move & Activate
-		$proper_destination = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'];
-		$wp_filesystem->move( $result['destination'], $proper_destination );
-		$result['destination'] = $proper_destination;
-		$activate = activate_plugin( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
-
-		// Output the update message
-		$fail  = __( 'The plugin has been updated, but could not be reactivated. Please reactivate it manually.', 'github_plugin_updater' );
-		$success = __( 'Plugin reactivated successfully.', 'github_plugin_updater' );
-		echo is_wp_error( $activate ) ? $fail : $success;
-		return $result;
-
-	}
 }
+
+new Updater(
+	[
+		'name' => 'brindle-lola-2',                     // Theme Name.
+		'repo' => 'BrindleDigital/brindle-lola-2',             // Theme repository.
+		'slug' => 'brindle-lola-2',                     // Theme Slug.
+		'url'  => 'https://github.com/BrindleDigital/brindle-lola-2', // Theme URL.
+		'ver'  => 'v1.0.8'                        // Theme Version.
+	]
+);

@@ -1,37 +1,5 @@
 <?php 
 // Starts the engine.
-
-include_once('updater.php');
-
-add_action( 'init', 'github_plugin_updater_test_init' );
-function github_plugin_updater_test_init() {
-
-    include_once 'updater.php';
-
-    define( 'WP_GITHUB_FORCE_UPDATE', true );
-
-    if ( is_admin() ) { // note the use of is_admin() to double check that this is happening in the admin
-
-        $config = array(
-            'slug' => plugin_basename( __FILE__ ),
-            'proper_folder_name' => 'github-updater',
-            'api_url' => 'https://api.github.com/repos/BrindleDigital/brindle-lola-2',
-            'raw_url' => 'https://raw.github.com/BrindleDigital/brindle-lola-2/master',
-            'github_url' => 'https://github.com/BrindleDigital/brindle-lola-2',
-            'zip_url' => 'https://github.com/BrindleDigital/brindle-lola-2/archive/master.zip',
-            'sslverify' => true,
-            'requires' => '3.0',
-            'tested' => '3.3',
-            'readme' => 'README.md',
-            'access_token' => '',
-        );
-
-        new WP_GitHub_Updater( $config );
-
-    }
-
-}
-
 add_action( 'wp_enqueue_scripts', 'brindle_enqueue_styles' );
 function brindle_enqueue_styles() {
       wp_enqueue_style( 'parent-style', get_template_directory_uri() . '/style.css' );
@@ -82,3 +50,9 @@ function custom_acf_json_filename($filename, $post, $load_path) {
     return $filename;
 }
 add_filter('acf/json/save_file_name', 'custom_acf_json_filename', 10, 3);
+
+
+include_once('Updater.php');
+add_action( 'after_setup_theme', function() {
+    get_template_part( 'inc/classes/Updater' );
+});
