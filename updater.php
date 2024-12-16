@@ -208,6 +208,6 @@ new Updater(
 		'repo' => 'BrindleDigital/brindle-lola-2',             // Theme repository.
 		'slug' => 'brindle-lola-2',                     // Theme Slug.
 		'url'  => 'https://github.com/BrindleDigital/brindle-lola-2', // Theme URL.
-		'ver'  => 1.0.0                        // Theme Version.
+		'ver'  => 1.0                        // Theme Version.
 	]
 );
