@@ -6,9 +6,9 @@ Author: Brindle Digital
 Author URI: https://www.brindledigital.com/
 GitHub Theme URI: https://github.com/BrindleDigital/brindle-lola-2
 GitHub Branch:    master
-Version: 1.2
+Version: 1.3
 Template:		 generatepress
-Date:            15-12-2024
+Date:            11-12-2024
 Requires at least: 5.0
 Tested up to: 5.7
 Requires PHP: 7.0
@@ -47,4 +47,55 @@ body .wp-block-button .wp-block-button__link {
 .gb-container.sticky-section {
 	position: sticky;
 	top: 60px;
+}
+
+#menu-footer-menu {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	list-style: none;
+	column-gap: 36px;
+	flex-wrap: nowrap;
+}
+
+#menu-footer-menu li {
+	display: block;
+	margin: 0 0 0 0;
+}
+
+#menu-footer-menu li a {
+	text-decoration: none;
+	white-space: nowrap;
+	padding: 10px 16px;
+}
+
+.site-footer .footer-widgets .widget {
+  margin-bottom: 0;
+} 
+
+#menu-footer-menu li.nav-btn a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	white-space: nowrap;
+	min-width: 264px;
+	height: 62px;
+	padding: 20px 40px;
+	gap: 0px;
+	border-radius: 50px;
+	background-color: var(--contrast);
+	color: var(--base-3);
+}
+
+body .site-footer .is-layout-flex {
+	flex-wrap: nowrap;
+}
+
+@media(max-width:1480px) {
+	#menu-footer-menu {
+		gap: 20px;
+	}
+	#menu-footer-menu li a {
+		padding: 10px 8px;
+	}
 }
