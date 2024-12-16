@@ -52,7 +52,7 @@ function custom_acf_json_filename($filename, $post, $load_path) {
 add_filter('acf/json/save_file_name', 'custom_acf_json_filename', 10, 3);
 
 
-include_once('Updater.php');
+include_once('updater.php');
 add_action( 'after_setup_theme', function() {
     get_template_part( 'inc/classes/Updater' );
 });
