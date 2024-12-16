@@ -1,2 +1,2 @@
 # brindle-lola-2
-~Current Version:v1.0.9~
+~Current Version:v1.0.10~
