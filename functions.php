@@ -58,8 +58,9 @@ add_filter('acf/json/save_file_name', 'custom_acf_json_filename', 10, 3);
 add_filter('pre_set_site_transient_update_themes', 'automatic_GitHub_updates', 100, 1);
 function automatic_GitHub_updates($data) {
   // Theme information
-  $theme   = get_stylesheet(); // Folder name of the current theme
-  $current = wp_get_theme()->get('Version'); // Get the version of the current theme
+   $theme   = get_stylesheet(); // Folder name of the current theme
+   $current = wp_get_theme()->get('Version'); // Get the version of the current theme 
+  //exit;
   // GitHub information
   $user = 'BrindleDigital'; // The GitHub username hosting the repository
   $repo = 'brindle-lola-2'; // Repository name as it appears in the URL
@@ -69,6 +70,8 @@ function automatic_GitHub_updates($data) {
       stream_context_create(['http' => ['header' => "User-Agent: ".$user."\r\n"]])
   ));
   if($file) {
+      //echo "<pre>";
+     // print_r($file);
       $update = filter_var($file->tag_name, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
     // Only return a response if the new version number is higher than the current version
     if($update > $current) {
@@ -78,7 +81,7 @@ function automatic_GitHub_updates($data) {
             // This way you can still use tags like v1.1 or ver1.1 if desired
             'new_version' => $update,
             'url'         => 'https://github.com/'.$user.'/'.$repo,
-            'package'     => $file->assets[0]->browser_download_url,
+            'package'     => $file->zipball_url,
       );
     }
   }
