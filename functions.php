@@ -78,8 +78,7 @@ if(function_exists('acf_add_options_page')) {
 
 
 
-// Automatic theme updates from the GitHub repository
-//include_once('git-auto-updater.php');
+
 
 
 function register_shortcodes()
@@ -124,3 +123,7 @@ function show_amenities_list(){
     $content = ob_get_clean();
     return $content;
 }
+
+
+// Automatic theme updates from the GitHub repository
+include_once('git-auto-updater.php');
