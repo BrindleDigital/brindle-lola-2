@@ -1,6 +1,5 @@
 <?php 
 // Starts the engine.
-
 add_action( 'wp_enqueue_scripts', 'brindle_enqueue_styles' );
 function brindle_enqueue_styles() {
       wp_enqueue_style( 'parent-style', get_template_directory_uri() . '/style.css' );
@@ -52,38 +51,76 @@ function custom_acf_json_filename($filename, $post, $load_path) {
 }
 add_filter('acf/json/save_file_name', 'custom_acf_json_filename', 10, 3);
 
+// Register ACF global options pages
+if(function_exists('acf_add_options_page')) {
+    acf_add_options_page(array(
+        'page_title'    => 'Theme General Settings',
+        'menu_title'    => 'Theme Settings',
+        'menu_slug'     => 'theme-general-settings'
+    ));
+    acf_add_options_sub_page(array(
+        'page_title'    => 'Site Setting',
+        'menu_title'    => 'Site Setting',
+        'parent_slug'   => 'theme-general-settings'
+    )); 
+    acf_add_options_sub_page(array(
+        'page_title'    => 'Home Amenities Manager',
+        'menu_title'    => 'Amenities Manager',
+        'parent_slug'   => 'theme-general-settings'
+    )); 
+    acf_add_options_sub_page(array(
+        'page_title'    => 'Amenities Page Manager',
+        'menu_title'    => 'Amenities Page Manager',
+        'parent_slug'   => 'theme-general-settings'
+    ));    
+}
+
+
 
 
 // Automatic theme updates from the GitHub repository
-add_filter('pre_set_site_transient_update_themes', 'automatic_GitHub_updates', 100, 1);
-function automatic_GitHub_updates($data) {
-  // Theme information
-   $theme   = get_stylesheet(); // Folder name of the current theme
-   $current = wp_get_theme()->get('Version'); // Get the version of the current theme 
-  //exit;
-  // GitHub information
-  $user = 'BrindleDigital'; // The GitHub username hosting the repository
-  $repo = 'brindle-lola-2'; // Repository name as it appears in the URL
-  // Get the latest release tag from the repository. The User-Agent header must be sent, as per
-  // GitHub's API documentation: https://developer.github.com/v3/#user-agent-required
-  $file = @json_decode(@file_get_contents('https://api.github.com/repos/'.$user.'/'.$repo.'/releases/latest', false,
-      stream_context_create(['http' => ['header' => "User-Agent: ".$user."\r\n"]])
-  ));
-  if($file) {
-      //echo "<pre>";
-     // print_r($file);
-      $update = filter_var($file->tag_name, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-    // Only return a response if the new version number is higher than the current version
-    if($update > $current) {
-        $data->response[$theme] = array(
-            'theme'       => $theme,
-            // Strip the version number of any non-alpha characters (excluding the period)
-            // This way you can still use tags like v1.1 or ver1.1 if desired
-            'new_version' => $update,
-            'url'         => 'https://github.com/'.$user.'/'.$repo,
-            'package'     => $file->zipball_url,
-      );
-    }
-  }
-  return $data;
+//include_once('git-auto-updater.php');
+
+
+function register_shortcodes()
+{
+  add_shortcode("local-day-night-slider", "show_local_day_night_slider");  
+  add_shortcode("amenities-tab", "show_amenities_tab"); 
+  add_shortcode("search-form", "show_form"); 
+  add_shortcode("show-price-and-address", "show_price_address"); 
+  add_shortcode("amenities-list", "show_amenities_list"); 
+}
+add_action("init", "register_shortcodes");
+
+
+include_once get_stylesheet_directory() . "/cpt/dnslider.php";
+function show_local_day_night_slider(){
+    ob_start();
+    include_once get_stylesheet_directory() . "/cpt/show-dnslider.php";
+    $content = ob_get_clean();
+    return $content;
+}
+function show_amenities_tab(){
+    ob_start();
+    include_once get_stylesheet_directory() . "/cpt/show-amenities-tab.php";
+    $content = ob_get_clean();
+    return $content;
+}
+function show_form(){
+    ob_start();
+    include_once get_stylesheet_directory() . "/cpt/show-form.php";
+    $content = ob_get_clean();
+    return $content;
+}
+function show_price_address(){
+    ob_start();
+    include_once get_stylesheet_directory() . "/cpt/show-price-address.php";
+    $content = ob_get_clean();
+    return $content;
+}
+function show_amenities_list(){
+    ob_start();
+    include_once get_stylesheet_directory() . "/cpt/show-amenities-list.php";
+    $content = ob_get_clean();
+    return $content;
 }
