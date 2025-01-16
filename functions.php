@@ -126,4 +126,4 @@ function show_amenities_list(){
 
 
 // Automatic theme updates from the GitHub repository
-include_once('git-auto-updater.php');
+//include_once('git-auto-updater.php');
