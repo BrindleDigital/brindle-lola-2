@@ -88,6 +88,7 @@ function register_shortcodes()
   add_shortcode("search-form", "show_form"); 
   add_shortcode("show-price-and-address", "show_price_address"); 
   add_shortcode("amenities-list", "show_amenities_list"); 
+  add_shortcode("show-menu", "show_menu_list");  
 }
 add_action("init", "register_shortcodes");
 
@@ -122,6 +123,21 @@ function show_amenities_list(){
     include_once get_stylesheet_directory() . "/cpt/show-amenities-list.php";
     $content = ob_get_clean();
     return $content;
+}
+function show_menu_list($attr){
+    ob_start();
+    $menu = '';
+    if(isset($attr['menu'])){
+        $menu = $attr['menu']; 
+    } 
+    if($menu !=''){
+        ?>
+        <div class="widget widget_nav_menu"><?php echo wp_nav_menu( array( 'menu' => $menu ) );?></div>
+        <?php
+
+    }
+    $output = ob_get_clean();
+    return $output;
 }
 
 

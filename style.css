@@ -6,9 +6,9 @@ Author: Brindle Digital
 Author URI: https://www.brindledigital.com/
 GitHub Theme URI: https://github.com/BrindleDigital/brindle-lola-2
 GitHub Branch:    master
-Version: 1.11
+Version: 1.12
 Template:		 generatepress
-Date:            16-01-2025
+Date:            05-02-2025
 Requires at least: 5.0
 Tested up to: 5.7
 Requires PHP: 7.0
@@ -79,7 +79,7 @@ body .wp-block-button .wp-block-button__link:focus {
 	top: 60px;*/
 }
 
-#menu-footer-menu {
+.footer-nav-primary ul {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -88,12 +88,12 @@ body .wp-block-button .wp-block-button__link:focus {
 	flex-wrap: nowrap;
 }
 
-#menu-footer-menu li {
+.footer-nav-primary ul li {
 	display: block;
 	margin: 0 0 0 0;
 }
 
-#menu-footer-menu li a {
+.footer-nav-primary ul li a {
 	text-decoration: none;
 	white-space: nowrap;
 	padding: 10px 16px;
@@ -103,7 +103,7 @@ body .wp-block-button .wp-block-button__link:focus {
   margin-bottom: 0;
 } 
 
-#menu-footer-menu li.nav-btn a {
+.footer-nav-primary ul li.nav-btn a {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -119,8 +119,8 @@ body .wp-block-button .wp-block-button__link:focus {
 	transition: all .2s ease-in-out;
 }
 
-#menu-footer-menu li.nav-btn a:hover,
-#menu-footer-menu li.nav-btn a:focus {
+.footer-nav-primary ul li.nav-btn a:hover,
+.footer-nav-primary ul li.nav-btn a:focus {
 	background-color: var(--base-3);
   color: var(--contrast-2);
 }
@@ -133,7 +133,7 @@ body .site-footer .wp-block-social-links {
 	margin: 0 0 0;
 }
 
-body .site-footer .gb-container.footer-nav-secondary #menu-footer-menu-2 {
+body .site-footer .gb-container.footer-nav-secondary ul {
 	display: flex;
 	justify-content: center;
 	flex-wrap: wrap;
@@ -142,13 +142,13 @@ body .site-footer .gb-container.footer-nav-secondary #menu-footer-menu-2 {
 	column-gap: 0;
 }
 
-body .site-footer .gb-container.footer-nav-secondary #menu-footer-menu-2 li {
+body .site-footer .gb-container.footer-nav-secondary ul li {
 	margin: 0 0 0;
 	display: inline-block;
 	list-style-type: none;
 }
 
-body .site-footer .gb-container.footer-nav-secondary #menu-footer-menu-2 li+li::before{
+body .site-footer .gb-container.footer-nav-secondary ul li+li::before{
 	content: "/";
 	display: inline-block;
 	margin: 0 10px;
@@ -768,10 +768,10 @@ body .gform_wrapper.gravity-theme .gform_page_footer input:hover{
 }
 
 @media(max-width:1480px) {
-	#menu-footer-menu {
+	.footer-nav-primary ul {
 		gap: 20px;
 	}
-	#menu-footer-menu li a {
+	.footer-nav-primary ul li a {
 		padding: 10px 8px;
 	}
 	.amenities-tab ul.nav-tab li a {
@@ -790,7 +790,7 @@ body .gform_wrapper.gravity-theme .gform_page_footer input:hover{
 }
 
 @media(max-width:1200px) {
-	#menu-footer-menu {
+	.footer-nav-primary ul {
 		flex-direction: column;
 		gap: 25px;
 		margin-bottom: 15px;
