@@ -10,8 +10,10 @@ jQuery(document).ready(function() {
 
       event.preventDefault();
       //console.log('clickme');
-      jQuery(this).children("ul").slideToggle('fast');
-      jQuery(this).find('span').toggleClass('open');
+      //jQuery(this).children("ul").slideToggle('fast');
+      //jQuery(this).find('span').toggleClass('open');
+      jQuery(this).children("ul").slideDown('fast');
+      jQuery(this).find('span').addClass('open');
 
 
     });
@@ -28,7 +30,10 @@ jQuery(document).ready(function() {
         var url = jQuery(this).attr('href');
         var target =  jQuery(this).attr('target');       
         console.log(target);
-        if(target === '_blank'){
+        if(typeof url === "undefined"){ 
+          //console.log(undefined);
+          event.preventDefault();
+        }else if(target === '_blank'){
           window.open(url, '_blank');
         }else{
           window.location.href=jQuery(this).attr('href');
@@ -49,43 +54,45 @@ jQuery(document).ready(function() {
 });
 
 
+ if( jQuery('.section-parallax').length )         // use this if you are using id to check
+{
+
+
+      //Parallax-Custom
+      const section = jQuery('.section-parallax');
+      const shapes = jQuery('.shape-1, .shape-2, .shape-3, .shape-4');
+      const parallaxMultipliers = [0.05, -0.1, 0.15, 0.0001];
 
 
 
-//Parallax-Custom
-const section = jQuery('.section-parallax');
-const shapes = jQuery('.shape-1, .shape-2, .shape-3, .shape-4');
-const parallaxMultipliers = [0.05, -0.1, 0.15, 0.0001];
+      let shapeOffsets = [];
+      let isSectionInView = false;
 
+      shapes.each(function(index, shape) {
+        shapeOffsets[index] = 0;
+      });
 
+      jQuery(window).on('scroll', function() {
+        const sectionTop = section.offset().top;
+        const viewportTop = jQuery(window).scrollTop();
 
-let shapeOffsets = [];
-let isSectionInView = false;
+        if (viewportTop < sectionTop + section.outerHeight() && viewportTop > sectionTop) {
+          isSectionInView = true;
+        } else {
+          isSectionInView = false;
+        }
 
-shapes.each(function(index, shape) {
-  shapeOffsets[index] = 0;
-});
+        if (isSectionInView) {
+          shapes.each(function(index, shape) {
+            const parallaxOffset = (viewportTop - sectionTop) * parallaxMultipliers[index];
+            shapeOffsets[index] = parallaxOffset;
+            jQuery(shape).css('transform', `translateY(${parallaxOffset}px)`);
+          });
+        } else {
+          shapes.each(function(index, shape) {
+            jQuery(shape).css('transform', `translateY(${shapeOffsets[index]}px)`);
+          });
+        }
+      });
 
-jQuery(window).on('scroll', function() {
-  const sectionTop = section.offset().top;
-  const viewportTop = jQuery(window).scrollTop();
-
-  if (viewportTop < sectionTop + section.outerHeight() && viewportTop > sectionTop) {
-    isSectionInView = true;
-  } else {
-    isSectionInView = false;
-  }
-
-  if (isSectionInView) {
-    shapes.each(function(index, shape) {
-      const parallaxOffset = (viewportTop - sectionTop) * parallaxMultipliers[index];
-      shapeOffsets[index] = parallaxOffset;
-      jQuery(shape).css('transform', `translateY(${parallaxOffset}px)`);
-    });
-  } else {
-    shapes.each(function(index, shape) {
-      jQuery(shape).css('transform', `translateY(${shapeOffsets[index]}px)`);
-    });
-  }
-});
-
+}
