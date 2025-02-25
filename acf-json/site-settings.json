@@ -69,6 +69,27 @@
             "append": ""
         },
         {
+            "key": "field_67bd596ccd4f7",
+            "label": "Show Price",
+            "name": "show_price",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 1,
+            "allow_in_bindings": 0,
+            "ui": 0,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        },
+        {
             "key": "field_67a2484effb9c",
             "label": "Show Move In Date",
             "name": "show_move_in_date",
@@ -103,13 +124,14 @@
                 "class": "",
                 "id": ""
             },
-            "choices": {
-                "1": "1",
-                "2": "2",
-                "3": "3",
-                "4": "4",
-                "5": "5"
-            },
+            "choices": [
+                "Studio",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5"
+            ],
             "default_value": [],
             "return_format": "value",
             "multiple": 1,
@@ -138,5 +160,5 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1738688777
+    "modified": 1740462474
 }
