@@ -6,7 +6,7 @@ jQuery(document).ready(function() {
     });
 
 
-    jQuery("li:has(ul)").click(function(event){
+    jQuery(".nav-btn:has(ul)").click(function(event){
 
       event.preventDefault();
       //console.log('clickme');
@@ -19,14 +19,14 @@ jQuery(document).ready(function() {
     });
 
 
-    jQuery("li:has(ul) span").click(function(event){
+    jQuery(".nav-btn:has(ul) span").click(function(event){
         event.preventDefault();
         //console.log('clickme_ic');
         jQuery(this).parent().parent().children("ul").slideToggle('fast');
         jQuery(this).parent().find('span').toggleClass('open');
     });
 
-    jQuery("li:has(ul) ul li a").click(function(event){        
+    jQuery(".nav-btn:has(ul) ul li a").click(function(event){        
         var url = jQuery(this).attr('href');
         var target =  jQuery(this).attr('target');       
         console.log(target);

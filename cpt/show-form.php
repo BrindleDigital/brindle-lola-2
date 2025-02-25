@@ -1,14 +1,31 @@
-<?php if(get_field('show_move_in_date','option')){?>
-<?php }else{?>
-  <style type="text/css">
-    .search-form form {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    .search-form .dropdown-container {
-        border-right: none;
-    }
-  </style>
-<?php }?>
+<?php 
+$c=4;
+if(get_field('show_move_in_date','option')){}else{
+  $c--;
+}
+if(get_field('show_price','option')){}else{
+  $c--;
+}
+?>
+
+
+<style type="text/css">
+  .search-form form {
+      grid-template-columns: repeat(<?php echo $c;?>, 1fr);
+  }
+  <?php if($c==3) {?>
+      .search-form .dropdown-container {
+          border-right: none;
+      }
+  <?php } ?>
+  <?php if($c==2) {?>
+      .search-form .field-wrapper {
+          border-right: none;
+      }
+  <?php } ?>
+</style>
+
+
 <div class="search-form">
     <form action="<?php the_field('floor_plan_page','option'); ?>" method="GET">
       <div class="field-wrapper">
@@ -16,12 +33,21 @@
           <option value="0">Bedrooms</option>
           <?php $bedroomList = get_field('bedrooms_availabel','option');
 
+          
+
           ?>
-          <?php for($i=0;$i<count($bedroomList);$i++){?>
-              <option value="<?php echo $bedroomList[$i];?>"><?php echo $bedroomList[$i];?></option>          
+          <?php for($i=0;$i<count($bedroomList);$i++){
+              $label = $bedroomList[$i];
+              if($label == 0){
+                $label = 'Studio';
+              }
+          ?>
+              <option value="<?php echo $bedroomList[$i];?>"><?php echo $label;?></option>          
           <?php }?>
         </select>
       </div>
+
+      <?php if(get_field('show_price','option')){?>
       <div class="dropdown-container">
         <select id="price" name="price">
           <option value="">Select Price</option>
@@ -37,6 +63,8 @@
           </div>
         </div>
       </div>
+      <?php }?>
+
       <?php if(get_field('show_move_in_date','option')){?>
           <!-- Move-In Date Dropdown -->
           <div class="date-container">
