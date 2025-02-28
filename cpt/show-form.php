@@ -23,6 +23,11 @@ if(get_field('show_price','option')){}else{
           border-right: none;
       }
   <?php } ?>
+  @media (max-width: 767px){
+    .search-form form {
+      grid-template-columns: repeat(1, 1fr);
+    }
+  }
 </style>
 
 
@@ -85,10 +90,11 @@ if(get_field('show_price','option')){}else{
     // Price Dropdown Behavior
     const priceDropdown = document.querySelector('.dropdown-container');
     const priceSelect = document.getElementById('price');
-
-    priceSelect.addEventListener('click', () => {
-      priceDropdown.classList.toggle('open');
-    });
+    <?php if(get_field('show_price','option')){?>
+        priceSelect.addEventListener('click', () => {
+          priceDropdown.classList.toggle('open');
+        });
+    <?php }?>
     <?php if(get_field('show_move_in_date','option')){?>
         // Move-In Date Dropdown Behavior
         const dateDropdown = document.querySelector('.date-container');
@@ -100,9 +106,11 @@ if(get_field('show_price','option')){}else{
     <?php }?>
     // Close dropdowns when clicking outside
     document.addEventListener('click', (event) => {
-      if (!priceDropdown.contains(event.target)) {
-        priceDropdown.classList.remove('open');
-      }
+      <?php if(get_field('show_price','option')){?>
+        if (!priceDropdown.contains(event.target)) {
+          priceDropdown.classList.remove('open');
+        }
+      <?php }?>
       <?php if(get_field('show_move_in_date','option')){?>
           if (!dateDropdown.contains(event.target)) {
             dateDropdown.classList.remove('open');
@@ -110,10 +118,10 @@ if(get_field('show_price','option')){}else{
       <?php }?>
     });
     <?php if(get_field('show_move_in_date','option')){?>
-    // Ensure the calendar appears on any part of the input click
-    const dateInput = document.getElementById('move-in-date');
-    dateInput.addEventListener('click', () => {
-      dateInput.focus(); // Ensures the calendar is triggered on any click
-    });
+          // Ensure the calendar appears on any part of the input click
+          const dateInput = document.getElementById('move-in-date');
+          dateInput.addEventListener('click', () => {
+            dateInput.focus(); // Ensures the calendar is triggered on any click
+          });
     <?php }?>
   </script>
