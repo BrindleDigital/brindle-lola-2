@@ -29,7 +29,7 @@ jQuery(document).ready(function() {
     jQuery(".nav-btn:has(ul) ul li a").click(function(event){        
         var url = jQuery(this).attr('href');
         var target =  jQuery(this).attr('target');       
-        console.log(target);
+        //console.log(target);
         if(typeof url === "undefined"){ 
           //console.log(undefined);
           event.preventDefault();
@@ -57,7 +57,7 @@ jQuery(document).ready(function() {
  if( jQuery('.section-parallax').length )         // use this if you are using id to check
 {
 
-
+  if (jQuery(window).width() > 500) {
       //Parallax-Custom
       const section = jQuery('.section-parallax');
       const shapes = jQuery('.shape-1, .shape-2, .shape-3, .shape-4');
@@ -94,5 +94,5 @@ jQuery(document).ready(function() {
           });
         }
       });
-
+  }
 }

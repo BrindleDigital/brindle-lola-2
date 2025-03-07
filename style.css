@@ -6,9 +6,9 @@ Author: Brindle Digital
 Author URI: https://www.brindledigital.com/
 GitHub Theme URI: https://github.com/BrindleDigital/brindle-lola-2
 GitHub Branch:    master
-Version: 1.15
+Version: 1.16
 Template:		 generatepress
-Date:            28-02-2025
+Date:            07-03-2025
 Requires at least: 5.0
 Tested up to: 5.7
 Requires PHP: 7.0
@@ -1276,4 +1276,9 @@ body .gb-button.tour-button {
 }
 .amenities-tab-mobile .slider.slick-slider .slick-arrow.slick-prev {
 	left: -15px;
+}
+@media(max-width:1024px) {
+	body .site-footer .wp-block-social-links 	{
+		flex-direction:row;
+	}
 }
