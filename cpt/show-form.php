@@ -27,6 +27,18 @@ if(get_field('show_price','option')){}else{
     .search-form form {
       grid-template-columns: repeat(1, 1fr);
     }
+    .dropdown-content, .date-content {
+      position: relative;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .dropdown-container.open .dropdown-content {
+      margin-bottom: 12px;
+    }
+
+    .date-container.open #date-in,.dropdown-container.open #price{
+      display:none !important;
+    }
   }
 </style>
 
