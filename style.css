@@ -6,9 +6,9 @@ Author: Brindle Digital
 Author URI: https://www.brindledigital.com/
 GitHub Theme URI: https://github.com/BrindleDigital/brindle-lola-2
 GitHub Branch:    master
-Version: 1.16
+Version: 1.17
 Template:		 generatepress
-Date:            07-03-2025
+Date:            12-03-2025
 Requires at least: 5.0
 Tested up to: 5.7
 Requires PHP: 7.0
@@ -51,7 +51,9 @@ Text Domain:	 brindle-lola-2
 	content: "";
 	position: absolute;
 	inset: 0;
-	background: radial-gradient(95.33% 83.44% at 47.78% 89.76%, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.1) 53.1%, rgba(0, 0, 0, 0) 95.42%);
+	/*background: radial-gradient(95.33% 83.44% at 47.78% 89.76%, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.1) 53.1%, rgba(0, 0, 0, 0) 95.42%);
+	*/
+	background: radial-gradient(95.33% 83.44% at 47.78% 89.76%, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.5) 53.1%, rgba(0, 0, 0, .1) 95.42%);
 	border-radius: 0 0 20px 20px;
 }
 
@@ -1281,4 +1283,87 @@ body .gb-button.tour-button {
 	body .site-footer .wp-block-social-links 	{
 		flex-direction:row;
 	}
+}
+
+
+/*Landing*/
+.iframe-wrapper iframe {
+	width: 100%;
+	height: 100%;
+	border: 0;
+	outline: none;
+}
+/*Multistep Gravityform*/
+.gform_wrapper.gravity-theme .gf_progressbar_percentage.percentbar_blue{
+    background: var(--contrast) !important;    
+}
+.lp-form .gform_button, .lp-form .gform_next_button,.lp-form .gform_previous_button {
+    min-width: 160px !important;
+    height: 56px !important; 
+    font-size: 18px !important;
+    letter-spacing: 7% !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    text-align: center !important;
+    padding: 15px 35px !important; 
+    border-radius: 50px !important;
+    border: 3px solid var(--contrast);
+}
+.lp-form .gform_button:focus, .lp-form .gform_next_button:focus,.lp-form .gform_previous_button:focus {
+	background-color: var(--contrast) !important;   
+	color: var(--base-3) !important;
+}
+.lp-form .gform_body{
+	text-align: left;
+}
+.lp-form .gform_wrapper.gravity-theme .gform_previous_button.button {
+    color: var(--base-3) !important;
+    background-color: var(--contrast) !important;       
+}
+.lp-form .gform_wrapper.gravity-theme .gform_previous_button.button:hover {
+    background-color: var(--base-3) !important;
+    color: var(--contrast) !important;   
+    border-color: var(--contrast);    
+}
+
+.lp-form .gform_wrapper.gravity-theme .gfield--type-choice .gfield_checkbox .gchoice {
+  margin-bottom: 10px;
+}
+.lp-form .gform_wrapper.gravity-theme input[type="checkbox"]:where(:not(.gform-theme__disable):not(.gform-theme__disable *):not(.gform-theme__disable-framework):not(.gform-theme__disable-framework *)) {
+  border-radius: 2px;
+  border: 1px solid #6B6B6B;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.lp-form .gform_wrapper.gravity-theme .gfield-choice-input+label {
+	padding-left: 5px;
+}
+
+
+
+.lp-header-outer .wp-element-button{
+		min-width: 224px !important;
+    padding: 10px 20px !important;
+    min-height: 50px !important;
+    color: var(--base-3) !important;
+		font-size: 18px;
+		letter-spacing: 7%;
+		font-weight: 600;
+		text-transform: uppercase;
+		text-align: center;		
+		border-radius: 50px;
+		border: 3px solid var(--contrast);
+		background-color: var(--contrast);
+		justify-content: center;
+}
+.lp-header-outer .wp-element-button:hover{
+		border-color: var(--contrast);
+		background-color: var(--base-3);
+		color: var(--contrast-2) !important;
+}
+.lp-header-outer .lp-mobile-number.wp-element-button{
+	background-color: unset !important;
+	border: unset !important;
+	color: var(--contrast-2)!important;
 }

@@ -7,21 +7,14 @@ jQuery(document).ready(function() {
 
 
     jQuery(".nav-btn:has(ul)").click(function(event){
-
       event.preventDefault();
-      //console.log('clickme');
-      //jQuery(this).children("ul").slideToggle('fast');
-      //jQuery(this).find('span').toggleClass('open');
       jQuery(this).children("ul").slideDown('fast');
       jQuery(this).find('span').addClass('open');
-
-
     });
 
 
     jQuery(".nav-btn:has(ul) span").click(function(event){
         event.preventDefault();
-        //console.log('clickme_ic');
         jQuery(this).parent().parent().children("ul").slideToggle('fast');
         jQuery(this).parent().find('span').toggleClass('open');
     });
@@ -29,9 +22,7 @@ jQuery(document).ready(function() {
     jQuery(".nav-btn:has(ul) ul li a").click(function(event){        
         var url = jQuery(this).attr('href');
         var target =  jQuery(this).attr('target');       
-        //console.log(target);
         if(typeof url === "undefined"){ 
-          //console.log(undefined);
           event.preventDefault();
         }else if(target === '_blank'){
           window.open(url, '_blank');
@@ -42,9 +33,7 @@ jQuery(document).ready(function() {
 
     jQuery(".smooth-scroll a").click(function(event){
         event.preventDefault();
-        //console.log('sm');
-        var hrf = jQuery(this).attr('href');
-        
+        var hrf = jQuery(this).attr('href');        
         jQuery('html, body').animate({
             scrollTop: jQuery(hrf).offset().top
         }, 2000);
@@ -54,45 +43,81 @@ jQuery(document).ready(function() {
 });
 
 
- if( jQuery('.section-parallax').length )         // use this if you are using id to check
+if( jQuery('.section-parallax').length )         // use this if you are using id to check
 {
 
-  if (jQuery(window).width() > 500) {
-      //Parallax-Custom
-      const section = jQuery('.section-parallax');
-      const shapes = jQuery('.shape-1, .shape-2, .shape-3, .shape-4');
-      const parallaxMultipliers = [0.05, -0.1, 0.15, 0.0001];
+        if (jQuery(window).width() > 500) {
+            //Parallax-Custom
+            const section = jQuery('.section-parallax');
+            const shapes = jQuery('.shape-1, .shape-2, .shape-3, .shape-4');
+            const parallaxMultipliers = [0.05, -0.1, 0.15, 0.0001];
 
 
 
-      let shapeOffsets = [];
-      let isSectionInView = false;
+            let shapeOffsets = [];
+            let isSectionInView = false;
 
-      shapes.each(function(index, shape) {
-        shapeOffsets[index] = 0;
-      });
+            shapes.each(function(index, shape) {
+              shapeOffsets[index] = 0;
+            });
 
-      jQuery(window).on('scroll', function() {
-        const sectionTop = section.offset().top;
-        const viewportTop = jQuery(window).scrollTop();
+            jQuery(window).on('scroll', function() {
+              const sectionTop = section.offset().top;
+              const viewportTop = jQuery(window).scrollTop();
 
-        if (viewportTop < sectionTop + section.outerHeight() && viewportTop > sectionTop) {
-          isSectionInView = true;
-        } else {
-          isSectionInView = false;
+              if (viewportTop < sectionTop + section.outerHeight() && viewportTop > sectionTop) {
+                isSectionInView = true;
+              } else {
+                isSectionInView = false;
+              }
+
+              if (isSectionInView) {
+                shapes.each(function(index, shape) {
+                  const parallaxOffset = (viewportTop - sectionTop) * parallaxMultipliers[index];
+                  shapeOffsets[index] = parallaxOffset;
+                  jQuery(shape).css('transform', `translateY(${parallaxOffset}px)`);
+                });
+              } else {
+                shapes.each(function(index, shape) {
+                  jQuery(shape).css('transform', `translateY(${shapeOffsets[index]}px)`);
+                });
+              }
+            });
         }
 
-        if (isSectionInView) {
-          shapes.each(function(index, shape) {
-            const parallaxOffset = (viewportTop - sectionTop) * parallaxMultipliers[index];
-            shapeOffsets[index] = parallaxOffset;
-            jQuery(shape).css('transform', `translateY(${parallaxOffset}px)`);
-          });
-        } else {
-          shapes.each(function(index, shape) {
-            jQuery(shape).css('transform', `translateY(${shapeOffsets[index]}px)`);
-          });
-        }
-      });
-  }
 }
+
+
+
+
+// Select all »a« elements with a parent class »links« and add a function that is executed on click
+jQuery( '.tour-button' ).on( 'click', function(e){
+  e.preventDefault();
+  // Define variable of the clicked »a« element (»this«) and get its href value.
+  var href = jQuery(this).attr( 'href' );
+  
+  // Run a scroll animation to the position of the element which has the same id like the href value.
+  jQuery( 'html, body' ).animate({
+    scrollTop: jQuery( href ).offset().top
+  }, '300' );
+  
+  // Prevent the browser from showing the attribute name of the clicked link in the address bar
+  e.preventDefault();
+
+});
+
+
+jQuery( '.tour-button a' ).on( 'click', function(e){
+  e.preventDefault();
+  // Define variable of the clicked »a« element (»this«) and get its href value.
+  var href = jQuery(this).attr( 'href' );
+  
+  // Run a scroll animation to the position of the element which has the same id like the href value.
+  jQuery( 'html, body' ).animate({
+    scrollTop: jQuery( href ).offset().top
+  }, '300' );
+  
+  // Prevent the browser from showing the attribute name of the clicked link in the address bar
+  e.preventDefault();
+
+});
